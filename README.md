@@ -1,5 +1,5 @@
 # ramsy
-Hi, I'm Ramsy! Let’s boost your project in RAM!
+Hi, I'm Ramsy! Let's boost your project in RAM!
 
 <pre><code>_____________________  ___               
 ___  __ \__    |__   |/  /___________  __
@@ -61,3 +61,40 @@ MIT License
 
 - Created by SoundBlaster
 - Implementation support by ChatGPT (OpenAI)
+
+## TODO
+
+### Test Suite Improvements
+
+- [ ] Complete implementation of all test cases:
+  - [x] Test 1: Basic script execution
+  - [ ] Test 2: RAM disk creation
+  - [ ] Test 3: File synchronization
+  - [ ] Test 4: Git directory handling
+  - [ ] Test 5: Excluded directories
+  - [ ] Test 6: Error handling
+
+- [ ] Add more test cases:
+  - [ ] Test RAM disk size configuration
+  - [ ] Test cleanup on script termination
+  - [ ] Test handling of large files
+  - [ ] Test handling of file permissions
+  - [ ] Test handling of symlinks
+  - [ ] Test handling of special characters in filenames
+
+- [ ] Test environment improvements:
+  - [ ] Add test for different project sizes
+  - [ ] Add test for concurrent file operations
+  - [ ] Add test for system resource usage
+  - [ ] Add test for different file types and structures
+
+- [ ] CI/CD integration:
+  - [ ] Set up GitHub Actions for automated testing
+  - [ ] Add test coverage reporting
+  - [ ] Add automated test runs on pull requests
+
+- [ ] Documentation:
+  - [ ] Add test coverage documentation
+  - [ ] Add test troubleshooting guide
+  - [ ] Add test environment setup guide
+  - [ ] Document test dependencies and requirements
