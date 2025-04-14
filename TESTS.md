@@ -4,7 +4,7 @@ This document describes the test suite for the Ramsy project.
 
 ## Test Script
 
-The test suite is implemented in `test_ramsy.sh` and includes comprehensive testing of the Ramsy script functionality.
+The test suite is implemented in `test_ramsy.sh` and includes comprehensive testing of the Ramsy script functionality. The script uses absolute paths to ensure it works correctly regardless of the current working directory.
 
 ## Test Environment
 
@@ -14,6 +14,13 @@ The test suite creates a temporary environment in `/tmp/ramsy_test` with the fol
 - Test files
 - Commonly excluded directories (node_modules, .idea, dist)
 - System files (.DS_Store)
+
+## Prerequisites
+
+Before running the tests:
+1. Both `ramsy.sh` and `test_ramsy.sh` must be in the same directory
+2. The test script must have execute permissions (`chmod +x test_ramsy.sh`)
+3. The user must have sufficient permissions to create and mount RAM disks
 
 ## Test Cases
 
@@ -56,8 +63,15 @@ The test suite creates a temporary environment in `/tmp/ramsy_test` with the fol
 
 To run the test suite:
 
-1. Make sure you're in the directory containing both `ramsy.sh` and `test_ramsy.sh`
-2. Run `./test_ramsy.sh`
+1. Make sure both `ramsy.sh` and `test_ramsy.sh` are in the same directory
+2. Make the test script executable: `chmod +x test_ramsy.sh`
+3. Run the test script: `./test_ramsy.sh`
+
+The test script will:
+- Verify that `ramsy.sh` exists in the same directory
+- Create a test environment in `/tmp/ramsy_test`
+- Run all tests
+- Clean up after itself
 
 ## Test Results
 

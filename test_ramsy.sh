@@ -14,6 +14,10 @@ TESTS_RUN=0
 TESTS_PASSED=0
 TESTS_FAILED=0
 
+# Get the absolute path of the script's directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+RAMSY_SCRIPT="$SCRIPT_DIR/ramsy.sh"
+
 # Test directories
 TEST_ROOT="/tmp/ramsy_test"
 TEST_PROJECT="$TEST_ROOT/project"
@@ -53,6 +57,12 @@ cleanup() {
     rm -rf "$TEST_ROOT"
 }
 
+# Verify ramsy.sh exists
+if [ ! -f "$RAMSY_SCRIPT" ]; then
+    echo -e "${RED}Error: ramsy.sh not found in $SCRIPT_DIR${NC}"
+    exit 1
+fi
+
 # Set up trap for cleanup
 trap cleanup EXIT
 
@@ -78,7 +88,7 @@ touch dist/bundle.js
 
 # Test 1: Basic script execution
 echo -e "${YELLOW}Running Test 1: Basic script execution${NC}"
-if ../ramsy.sh &> "$TEST_LOG"; then
+if "$RAMSY_SCRIPT" &> "$TEST_LOG"; then
     print_result "Test 1" "pass" "Script executed successfully"
 else
     print_result "Test 1" "fail" "Script failed to execute"
@@ -126,7 +136,7 @@ fi
 # Test 6: Error handling
 echo -e "${YELLOW}Running Test 6: Error handling${NC}"
 # Try to run script again (should fail due to already mounted RAM disk)
-if ! ../ramsy.sh &> "$TEST_LOG"; then
+if ! "$RAMSY_SCRIPT" &> "$TEST_LOG"; then
     print_result "Test 6" "pass" "Script correctly handled error condition"
 else
     print_result "Test 6" "fail" "Script did not handle error condition"
