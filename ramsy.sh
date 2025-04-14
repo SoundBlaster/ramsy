@@ -18,6 +18,15 @@ USERNAME=$(whoami)
 SCRIPT_PATH="$HOME/ramdisk-sync_$PROJECT_NAME.sh"
 PLIST_PATH="$HOME/Library/LaunchAgents/com.local.ramdisksync.$PROJECT_NAME.plist"
 
+# Check if Homebrew is installed
+if ! command -v brew &> /dev/null; then
+    echo "Error: Homebrew is not installed."
+    echo "Please install Homebrew first by running:"
+    echo '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
+    echo "After installation, run this script again."
+    exit 1
+fi
+
 # Check if fswatch is installed
 if ! command -v fswatch &> /dev/null; then
     echo "Installing fswatch..."
@@ -32,11 +41,11 @@ if [ -d "$RAMDISK_PATH" ]; then
 fi
 
 # Check if LaunchAgent is already running
-if launchctl list | grep -q "com.local.ramdisksync.$PROJECT_NAME"; then
-    echo "Error: Sync service for this project is already running"
-    echo "Please stop it first or choose a different project directory"
-    exit 1
-fi
+# if launchctl list | grep -q "com.local.ramdisksync.$PROJECT_NAME"; then
+#     echo "Error: Sync service for this project is already running"
+#     echo "Please stop it first or choose a different project directory"
+#     exit 1
+# fi
 
 echo "Creating sync script: $SCRIPT_PATH"
 
@@ -67,37 +76,39 @@ EOF
 
 chmod +x "$SCRIPT_PATH"
 
-echo "Creating LaunchAgent: $PLIST_PATH"
+# echo "Creating LaunchAgent: $PLIST_PATH"
+# 
+# cat <<EOF > "$PLIST_PATH"
+# <?xml version="1.0" encoding="UTF-8"?>
+# <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+#    "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+# <plist version="1.0">
+# <dict>
+#     <key>Label</key>
+#     <string>com.local.ramdisksync.$PROJECT_NAME</string>
+#     <key>ProgramArguments</key>
+#     <array>
+#         <string>/bin/bash</string>
+#         <string>$SCRIPT_PATH</string>
+#     </array>
+#     <key>RunAtLoad</key>
+#     <true/>
+#     <key>KeepAlive</key>
+#     <true/>
+# </dict>
+# </plist>
+# EOF
+# 
+# echo "Loading LaunchAgent..."
+# launchctl unload "$PLIST_PATH" &> /dev/null
+# launchctl load "$PLIST_PATH"
 
-cat <<EOF > "$PLIST_PATH"
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
-   "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>Label</key>
-    <string>com.local.ramdisksync.$PROJECT_NAME</string>
-    <key>ProgramArguments</key>
-    <array>
-        <string>/bin/bash</string>
-        <string>$SCRIPT_PATH</string>
-    </array>
-    <key>RunAtLoad</key>
-    <true/>
-    <key>KeepAlive</key>
-    <true/>
-</dict>
-</plist>
-EOF
+# Run the sync script directly instead of using LaunchAgent
+echo "Starting RAM disk and sync..."
+"$SCRIPT_PATH"
 
-echo "Loading LaunchAgent..."
-launchctl unload "$PLIST_PATH" &> /dev/null
-launchctl load "$PLIST_PATH"
-
-echo "DONE! Everything will start automatically on the next system login."
+echo "DONE! RAM disk is mounted and sync is running."
 echo "RAM disk: $RAMDISK_PATH"
 echo "SSD project: $SSD_PROJECT_PATH"
 echo ""
-echo "To stop this instance, run:"
-echo "  launchctl unload $PLIST_PATH"
-echo "  diskutil unmount $RAMDISK_PATH"
+echo "To stop, press Ctrl+C"
