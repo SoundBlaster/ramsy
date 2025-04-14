@@ -17,6 +17,7 @@ diskutil erasevolume HFS+ "RamDisk" `hdiutil attach -nomount ram://8388608`
 rsync -a ~/path/to/project/ /Volumes/RamDisk/project/
 ```
 3. Syncing
+
     3.1 `rsync` in a cycle
     ```bash
     #!/bin/bash
@@ -27,6 +28,7 @@ rsync -a ~/path/to/project/ /Volumes/RamDisk/project/
         sleep 30  # every 30 second
     done
     ```
+
     3.2 `fswatch` + `rsync`
     ```bash
     brew install fswatch
@@ -39,12 +41,14 @@ rsync -a ~/path/to/project/ /Volumes/RamDisk/project/
         rsync -a --delete "$SRC" "$DEST"
     done
     ```
-    3.3
+
 4. Working with `.git`
+    
     4.1 Exclude git files
     ```bash
     rsync -a --exclude='.git' ~/path/to/project/ /Volumes/RamDisk/project/
     ```
+    
     4.2 Symlink to it
     ```bash
     ln -s ~/path/to/project/.git /Volumes/RamDisk/project/.git
