@@ -125,7 +125,7 @@ log "Starting file monitoring..."
     while true; do
         fswatch -o "\$RAMDISK_PATH" | while read f; do
             log "Changes detected, syncing..."
-            rsync -a --delete --exclude='.Trashes' "\$RAMDISK_PATH/" "\$SSD_PROJECT_PATH/" 2>/dev/null || true
+            rsync -a --delete --exclude='.git' --exclude='.Trashes' "\$RAMDISK_PATH/" "\$SSD_PROJECT_PATH/" 2>/dev/null || true
             log "Sync complete"
         done
         log "fswatch stopped, restarting in 5 seconds..."
