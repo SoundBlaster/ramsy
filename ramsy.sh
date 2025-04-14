@@ -1,5 +1,54 @@
 #!/bin/bash
 
+# Common ignored directories and files
+COMMON_IGNORES=(
+    # Version Control
+    ".git"
+    ".svn"
+    ".hg"
+    
+    # Dependencies and Build
+    "node_modules"
+    "bower_components"
+    "vendor"
+    "dist"
+    "build"
+    "__pycache__"
+    "*.egg-info"
+    ".pytest_cache"
+    ".next"
+    ".nuxt"
+    
+    # IDE and Editor
+    ".idea"
+    ".vscode"
+    ".vs"
+    "*.swp"
+    "*.swo"
+    
+    # OS specific
+    ".DS_Store"
+    ".Trashes"
+    ".Spotlight-V100"
+    ".fseventsd"
+    "Thumbs.db"
+    "Desktop.ini"
+    
+    # Logs and Temporary
+    "*.log"
+    "log/"
+    "logs/"
+    "tmp/"
+    "temp/"
+    ".cache"
+)
+
+# Convert ignore array to rsync exclude parameters
+RSYNC_EXCLUDES=""
+for item in "${COMMON_IGNORES[@]}"; do
+    RSYNC_EXCLUDES="$RSYNC_EXCLUDES --exclude='$item'"
+done
+
 # Exit on error, but allow us to handle it
 set -e
 trap 'handle_error $? $LINENO' ERR
@@ -18,7 +67,7 @@ cleanup() {
     echo "Cleaning up..."
     if [ -d "$RAMDISK_PATH" ]; then
         echo "Syncing final changes..."
-        rsync -a --delete --exclude='.Trashes' "$RAMDISK_PATH/" "$SSD_PROJECT_PATH/" 2>/dev/null || true
+        eval "rsync -a --delete $RSYNC_EXCLUDES \"\$RAMDISK_PATH/\" \"\$SSD_PROJECT_PATH/\"" 2>/dev/null || true
         echo "Unmounting RAM disk..."
         diskutil unmount "$RAMDISK_PATH" > /dev/null 2>&1 || true
     fi
@@ -113,7 +162,7 @@ diskutil erasevolume HFS+ "RAMDisk_\$PROJECT_NAME" \$DEVICE > /dev/null 2>&1
 
 # Initial sync
 log "Performing initial sync..."
-rsync -a --exclude='.git' --exclude='.Trashes' "\$SSD_PROJECT_PATH/" "\$RAMDISK_PATH/"
+eval "rsync -a $RSYNC_EXCLUDES \"\$SSD_PROJECT_PATH/\" \"\$RAMDISK_PATH/\""
 if [ -d "\$SSD_PROJECT_PATH/.git" ]; then
     log "Creating .git symlink..."
     ln -s "\$SSD_PROJECT_PATH/.git" "\$RAMDISK_PATH/.git"
@@ -125,7 +174,7 @@ log "Starting file monitoring..."
     while true; do
         fswatch -o "\$RAMDISK_PATH" | while read f; do
             log "Changes detected, syncing..."
-            rsync -a --delete --exclude='.git' --exclude='.Trashes' "\$RAMDISK_PATH/" "\$SSD_PROJECT_PATH/" 2>/dev/null || true
+            eval "rsync -a --delete $RSYNC_EXCLUDES \"\$RAMDISK_PATH/\" \"\$SSD_PROJECT_PATH/\"" 2>/dev/null || true
             log "Sync complete"
         done
         log "fswatch stopped, restarting in 5 seconds..."
